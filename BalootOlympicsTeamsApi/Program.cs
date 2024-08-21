@@ -5,6 +5,7 @@ builder.Configuration.ReadConfigurationFile(builder.Environment);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+string MyAllowSpecificOrigins = builder.Services.ConfigureCORS(builder.Environment);
 builder.Services.DbConfiguration(builder.Configuration, builder.Environment);
 
 builder.Services.RegisterSettings(builder.Configuration);
@@ -20,12 +21,15 @@ builder.Host.UseSerilog();
 
 var app = builder.Build();
 
+app.UseCors(MyAllowSpecificOrigins);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 // app.UseHttpsRedirection();
+
 app.UseSerilogRequestLogging();
 app.MapCarter();
 
