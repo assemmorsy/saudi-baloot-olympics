@@ -8,7 +8,11 @@ public static class RepoRegistrations
         #region DI Services
         services.AddScoped<PlayerRepo>();
         services.AddScoped<ConfirmationRequestRepo>();
-
+        services.Scan(scan => scan.FromCallingAssembly()
+            .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Repo")))
+            .AsSelf()
+            .WithScopedLifetime()
+        );
         #endregion
         return services;
 

@@ -1,7 +1,15 @@
+using System.Text.Json.Serialization;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.ReadConfigurationFile(builder.Environment);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.WriteIndented = true;
+    options.SerializerOptions.IncludeFields = true;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

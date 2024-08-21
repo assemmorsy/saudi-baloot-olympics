@@ -11,15 +11,10 @@ public static class ServicesRegistrations
         services.AddSingleton<OtpManager>();
         services.AddHttpClient();
         services.Scan(scan => scan.FromCallingAssembly()
-            .AddClasses(classes => classes
-            .Where(type => type.Name.EndsWith("Service") || type.Name.EndsWith("Filter") || type.Name.EndsWith("Repository")))
+            .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
             .AsSelf()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableToAny(typeof(IAsyncCommandService<,>)))
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
         );
-
         #endregion
         return services;
 
