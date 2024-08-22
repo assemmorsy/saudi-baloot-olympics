@@ -1,5 +1,5 @@
 ﻿namespace BalootOlympicsTeamsApi.Common;
-
+public sealed record SuccessResponse(object Data, string Message);
 public sealed record SuccessResponse<T>(T Data, string Message);
 
 public sealed record ErrorResponse(

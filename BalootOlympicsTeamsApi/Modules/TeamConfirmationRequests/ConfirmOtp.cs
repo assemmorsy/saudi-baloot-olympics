@@ -47,7 +47,7 @@ public sealed class ConfirmOtpDtoValidator : AbstractValidator<ConfirmOtpEndpoin
 
 public sealed class ConfirmOtpEndpoint : CarterModule
 {
-    public sealed record GetTeamDto(int Id, string Name, List<Players.GetPlayerEndpoint.PlayerDto> Players);
+    public sealed record GetTeamDto(int Id, string Name, string State, List<Players.GetPlayerEndpoint.PlayerDto> Players);
     public sealed record ConfirmOtpDto(Guid RequestId, string FirstPlayerOtp, string SecondPlayerOtp);
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
@@ -55,8 +55,7 @@ public sealed class ConfirmOtpEndpoint : CarterModule
             async Task<IResult> (ConfirmOtpDto request, HttpContext context, ConfirmTeamOtpService service) =>
                 (await service.ExecuteAsync(request))
                 .ResolveToIResult((team) =>
-                    TypedResults.Ok(new SuccessResponse<GetTeamDto>(
-                        new GetTeamDto(team.Id, team.Name, team.Players.Select(p => PlayersMapper.PlayerToPlayerDto(p)).ToList())
+                    TypedResults.Ok(new SuccessResponse<GetTeamDto>(PlayersMapper.TeamToTeamDto(team)
                         , "Team Created successfully.")),
                         context.TraceIdentifier))
             .WithOpenApi(op =>
