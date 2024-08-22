@@ -33,7 +33,7 @@ public static class LoggerServiceExtension
         // { };
         // loggerConfig.WriteTo.GoogleCloudLogging(googleCloudConfig);
         // // }
-        // Log.Logger = loggerConfig.CreateLogger();
+        Log.Logger = loggerConfig.CreateLogger();
     }
 
 
