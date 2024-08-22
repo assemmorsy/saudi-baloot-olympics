@@ -11,7 +11,7 @@ public class OtpManager
         _tOtp = new Totp(Base32Encoding.ToBytes(_otpSettings.Secret));
     }
 
-    public string GenerateOTP() => _tOtp.ComputeTotp();
+    public string GenerateOTP(DateTime timestamp) => _tOtp.ComputeTotp(timestamp);
 
     public bool IsOtpValid(DateTimeOffset createOn) => (DateTimeOffset.UtcNow - createOn).TotalSeconds <= _otpSettings.TimeInSec;
 

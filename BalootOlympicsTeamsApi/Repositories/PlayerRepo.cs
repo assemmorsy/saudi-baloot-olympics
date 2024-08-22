@@ -1,28 +1,26 @@
+using System.Linq.Expressions;
+
 namespace BalootOlympicsTeamsApi.Repositories;
 public sealed class PlayerRepo(OlympicsContext _dbCtx)
 {
-    public async Task<Result<Player>> GetPlayerByPhoneAsync(string phoneNumber)
+    public async Task<Result<Player>> GetPlayerByAsync<T>(Expression<Func<Player, bool>> predicate, T identifier)
     {
         Player? player = await _dbCtx.Players
             .Include(p => p.Team)
-            .SingleOrDefaultAsync(p => p.Phone == phoneNumber);
-        if (player == null) return Result.Fail(new EntityNotFoundError<string>(phoneNumber, nameof(Player)));
+            .SingleOrDefaultAsync(predicate);
+        if (player == null) return Result.Fail(new EntityNotFoundError<T>(identifier, nameof(Player)));
         return Result.Ok(player);
     }
-    public async Task<Result<Player>> GetPlayerByIdAsync(string id)
+
+    public async Task<Result<Player>> AddPlayersToTeam(int teamId, List<string> playerIds)
     {
-        Player? player = await _dbCtx.Players
-            .Include(p => p.Team)
-            .SingleOrDefaultAsync(p => p.Id == id);
-        if (player == null) return Result.Fail(new EntityNotFoundError<string>(id, nameof(Player)));
-        return Result.Ok(player);
-    }
-    public async Task<Result<Player>> GetPlayerByEmailAsync(string email)
-    {
-        Player? player = await _dbCtx.Players
-            .Include(p => p.Team)
-            .SingleOrDefaultAsync(p => p.Email == email);
-        if (player == null) return Result.Fail(new EntityNotFoundError<string>(email, nameof(Player)));
-        return Result.Ok(player);
+        var affected = await _dbCtx.Players.Where(p => playerIds.Contains(p.Id))
+        .ExecuteUpdateAsync(
+            setters => setters
+                .SetProperty(p => p.TeamId, teamId)
+        );
+        return affected == 2 ?
+            Result.Ok() :
+            Result.Fail(new EntityNotFoundError<int>(teamId, nameof(Team)));
     }
 }

@@ -61,17 +61,17 @@ public class MailingService(IOptions<EmailSettings> mailSettings, ILogger<Mailin
         StreamReader streamReader = new(path);
         string mailText = await streamReader.ReadToEndAsync();
         streamReader.Close();
-        string styledOtp = string.Join("", otp.ToCharArray().Select((d) =>
-        {
-            return $"<span class='character'>{d}</span>";
-        }));
-        Console.WriteLine(styledOtp);
-        return mailText.Replace("[code]", styledOtp);
+        // string styledOtp = string.Join("", otp.ToCharArray().Select((d) =>
+        // {
+        //     return $"<span class='character'>{d}</span>";
+        // }));
+        // Console.WriteLine(styledOtp);
+        return mailText.Replace("[code]", otp);
     }
 
     public async Task<Result> SendOtpToEmailAsync(string email, string otp)
     {
-        var emailSubject = "تأكيد البريد الالكتروني لحساب تطبيق قيدها";
+        var emailSubject = "تأكيد الانضمام الى فريق بدورة الالعاب السعودية";
         var emailBody = await GenerateConfirmEmailBody(otp);
         _ = SendEmailAsync(email, emailSubject, emailBody);
         return Result.Ok();

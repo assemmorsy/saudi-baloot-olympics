@@ -3,11 +3,11 @@ namespace BalootOlympicsTeamsApi.Modules.Players;
 public sealed class GetPlayerService(PlayerRepo _playerRepo)
 {
     public async Task<Result<Player>> ExecuteAsync(GetPlayerEndpoint.GetPlayerByPhoneDto dto) =>
-        await _playerRepo.GetPlayerByPhoneAsync(dto.Phone);
+        await _playerRepo.GetPlayerByAsync(p => p.Phone == dto.Phone, dto.Phone);
     public async Task<Result<Player>> ExecuteAsync(GetPlayerEndpoint.GetPlayerByEmailDto dto) =>
-        await _playerRepo.GetPlayerByEmailAsync(dto.Email);
+        await _playerRepo.GetPlayerByAsync(p => p.Phone == dto.Email, dto.Email);
     public async Task<Result<Player>> ExecuteAsync(GetPlayerEndpoint.GetPlayerByIdDto dto) =>
-        await _playerRepo.GetPlayerByIdAsync(dto.Id);
+        await _playerRepo.GetPlayerByAsync(p => p.Phone == dto.Id, dto.Id);
 }
 public sealed class GetPlayerEndpoint : CarterModule
 {
