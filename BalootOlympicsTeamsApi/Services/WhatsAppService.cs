@@ -9,6 +9,9 @@ public class WhatsAppService(IOptions<WhatsAppSettings> whatsSettings, IHttpClie
 
     public async Task<Result<string>> SendOtpAsync(string phoneNum, string username, string otp)
     {
+        if (!phoneNum.StartsWith("+"))
+            phoneNum = "+" + phoneNum;
+
         var body = new
         {
             messaging_product = "whatsapp",
