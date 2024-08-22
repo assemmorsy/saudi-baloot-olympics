@@ -13,7 +13,7 @@ public sealed class SendConfirmTeamOtpService(PlayerRepo _playerRepo, Confirmati
             return Result.Fail(new InvalidBodyInputError("الرقم المرجعى للاعب الاول غير موجود"));
 
         var secondPlayerRes = await _playerRepo.GetPlayerByAsync(p => p.Id == dto.SecondPlayerId, dto.SecondPlayerId);
-        if (firstPlayerRes.IsFailed)
+        if (secondPlayerRes.IsFailed)
             return Result.Fail(new InvalidBodyInputError("الرقم المرجعى للاعب الثانى غير موجود"));
 
         var firstPlayer = firstPlayerRes.Value;
