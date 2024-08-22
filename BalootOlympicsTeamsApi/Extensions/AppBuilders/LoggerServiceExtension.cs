@@ -18,22 +18,22 @@ public static class LoggerServiceExtension
             .WriteTo.Console()
             .WriteTo.File(new JsonFormatter(renderMessage: true), "./Error_logs/olympics.json", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileTimeLimit: TimeSpan.FromDays(30));
 
-        if (environment.IsDevelopment())
-        {
-            loggerConfig.WriteTo.File(new JsonFormatter(renderMessage: true), "./Info_logs/olympics.json", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Information, retainedFileTimeLimit: TimeSpan.FromDays(7));
-        }
-        else
-        {
-            GoogleLoggerSettings googleLoggerConfig = configuration.GetSection("GoogleLogger").Get<GoogleLoggerSettings>()
-                ?? throw new ArgumentNullException("can't get logging Configuration.");
-            string serviceAccountCredential = File.ReadAllText(googleLoggerConfig.JsonKeyPath);
-            var googleCloudConfig = new GoogleCloudLoggingSinkOptions(
-                projectId: googleLoggerConfig.ProjectId,
-                googleCredentialJson: serviceAccountCredential)
-            { };
-            loggerConfig.WriteTo.GoogleCloudLogging(googleCloudConfig);
-        }
-        Log.Logger = loggerConfig.CreateLogger();
+        // if (environment.IsDevelopment())
+        // {
+        loggerConfig.WriteTo.File(new JsonFormatter(renderMessage: true), "./Info_logs/olympics.json", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Information, retainedFileTimeLimit: TimeSpan.FromDays(7));
+        // }
+        // else
+        // {
+        // GoogleLoggerSettings googleLoggerConfig = configuration.GetSection("GoogleLogger").Get<GoogleLoggerSettings>()
+        //     ?? throw new ArgumentNullException("can't get logging Configuration.");
+        // string serviceAccountCredential = File.ReadAllText(googleLoggerConfig.JsonKeyPath);
+        // var googleCloudConfig = new GoogleCloudLoggingSinkOptions(
+        //     projectId: googleLoggerConfig.ProjectId,
+        //     googleCredentialJson: serviceAccountCredential)
+        // { };
+        // loggerConfig.WriteTo.GoogleCloudLogging(googleCloudConfig);
+        // // }
+        // Log.Logger = loggerConfig.CreateLogger();
     }
 
 
