@@ -7,16 +7,6 @@ public class ZohoMailingService(IOptions<EmailSettings> mailSettings, IHttpClien
     private readonly EmailSettings _mailSettings = mailSettings.Value;
     private readonly ILogger<ZohoMailingService> _logger = logger;
     private readonly IHttpClientFactory _clientFactory = clientFactory;
-    private static async Task<string> GenerateConfirmEmailBody(string otp)
-    {
-        string fileName = "confirmEmailCode.html";
-        string path = Path.Combine(Environment.CurrentDirectory, @"Templates", fileName);
-        StreamReader streamReader = new(path);
-        string mailText = await streamReader.ReadToEndAsync();
-        streamReader.Close();
-        return mailText.Replace("[code]", otp);
-    }
-
     public async Task<Result<string>> SendOtpToEmailAsync(string email, string otp)
     {
         var emailSubject = "تأكيد الانضمام الى فريق بدورة الالعاب السعودية";
@@ -33,13 +23,6 @@ public class ZohoMailingService(IOptions<EmailSettings> mailSettings, IHttpClien
             using var httpClient = _clientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization =
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Zoho-enczapikey", _mailSettings.Token);
-
-            var res = JsonSerializer.Serialize(CreateTemplateMessage(mailTo, otp, subject),
-                     options: new()
-                     {
-                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                     });
-            _logger.LogInformation("data : {req}", res);
             HttpResponseMessage response =
                 await httpClient.PostAsJsonAsync(new Uri($"{_mailSettings.ApiUrl}"),
                     CreateTemplateMessage(mailTo, otp, subject),
