@@ -7,6 +7,7 @@ public static class ServicesRegistrations
 
         #region DI Services
         services.AddScoped<MailingService>();
+        services.AddScoped<ZohoMailingService>();
         services.AddScoped<WhatsAppService>();
         services.AddSingleton<OtpManager>();
         services.AddHttpClient();

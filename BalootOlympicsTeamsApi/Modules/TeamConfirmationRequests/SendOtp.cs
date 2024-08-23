@@ -8,6 +8,9 @@ public sealed class SendConfirmTeamOtpService(PlayerRepo _playerRepo, Confirmati
 {
     public async Task<Result<ConfirmationRequest>> ExecuteAsync(SendOtpEndpoint.SendOtpDto dto)
     {
+        if (dto.FirstPlayerId == dto.SecondPlayerId)
+            return Result.Fail(new InvalidBodyInputError("يجب ادخال ارقام مرجعية مختلفة لكل لاعب"));
+
         var firstPlayerRes = await _playerRepo.GetPlayerByAsync(p => p.Id == dto.FirstPlayerId, dto.FirstPlayerId);
         if (firstPlayerRes.IsFailed)
             return Result.Fail(new InvalidBodyInputError("الرقم المرجعى للاعب الاول غير موجود"));
@@ -39,14 +42,14 @@ public sealed class SendConfirmTeamOtpService(PlayerRepo _playerRepo, Confirmati
         public Player Player { get; } = player;
         public string Otp { get; } = otp;
     }
-    public sealed class SendOtpHandler(WhatsAppService whatsAppService, MailingService mailingService) : INotificationHandler<SendOtpNotification>
+    public sealed class SendOtpHandler(WhatsAppService whatsAppService, ZohoMailingService zohoMailingService) : INotificationHandler<SendOtpNotification>
     {
         private readonly WhatsAppService _whatsAppService = whatsAppService;
-        private readonly MailingService _mailingService = mailingService;
+        private readonly ZohoMailingService _zohoMailingService = zohoMailingService;
         public async Task Handle(SendOtpNotification notification, CancellationToken cancellationToken)
         {
             await _whatsAppService.SendOtpAsync(notification.Player.Phone, notification.Player.NameAr, notification.Otp);
-            await _mailingService.SendOtpToEmailAsync(notification.Player.Email, notification.Otp);
+            await _zohoMailingService.SendOtpToEmailAsync(notification.Player.Email, notification.Otp);
         }
     }
 }
