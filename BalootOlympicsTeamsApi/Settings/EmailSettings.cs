@@ -11,6 +11,5 @@ public class EmailSettings
     public string ApiUrl { get; set; } = null!;
     public string SenderEmail { get; set; } = null!;
     public string SenderName { get; set; } = null!;
-
-
+    public string TemplateKey { get; set; } = null!;
 }

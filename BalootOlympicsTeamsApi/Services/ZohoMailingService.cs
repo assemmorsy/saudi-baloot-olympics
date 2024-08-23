@@ -17,18 +17,16 @@ public class ZohoMailingService(IOptions<EmailSettings> mailSettings, IHttpClien
         return mailText.Replace("[code]", otp);
     }
 
-    public async Task<Result> SendOtpToEmailAsync(string email, string otp)
+    public async Task<Result<string>> SendOtpToEmailAsync(string email, string otp)
     {
         var emailSubject = "تأكيد الانضمام الى فريق بدورة الالعاب السعودية";
-        var emailBody = await GenerateConfirmEmailBody(otp);
-        _ = SendByApi(email, emailSubject, emailBody);
-        return Result.Ok();
+        return await SendByApi(email, emailSubject, otp);
     }
 
     private record EmailAddress(string Address, string Name);
-    private record ToEmailAddress(EmailAddress Email_Address);
-    private record ZohoApiRequestDto(EmailAddress From, object[] To, string Subject, string HtmlBody);
-    private async Task<Result<string>> SendByApi(string mailTo, string subject, string body)
+    private record ToEmailAddress(EmailAddress Email_address);
+
+    private async Task<Result<string>> SendByApi(string mailTo, string subject, string otp)
     {
         try
         {
@@ -36,15 +34,19 @@ public class ZohoMailingService(IOptions<EmailSettings> mailSettings, IHttpClien
             httpClient.DefaultRequestHeaders.Authorization =
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Zoho-enczapikey", _mailSettings.Token);
 
-            var from = new EmailAddress(_mailSettings.SenderEmail, _mailSettings.SenderName);
-            var to = new EmailAddress(mailTo, "noreply");
-            ZohoApiRequestDto reqBody = new(from, [new { email_address = to }], subject, body);
-
+            var res = JsonSerializer.Serialize(CreateTemplateMessage(mailTo, otp, subject),
+                     options: new()
+                     {
+                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                     });
+            _logger.LogInformation("data : {req}", res);
             HttpResponseMessage response =
-                await httpClient.PostAsJsonAsync(new Uri($"{_mailSettings.ApiUrl}"), reqBody, options: new JsonSerializerOptions()
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                });
+                await httpClient.PostAsJsonAsync(new Uri($"{_mailSettings.ApiUrl}"),
+                    CreateTemplateMessage(mailTo, otp, subject),
+                    options: new JsonSerializerOptions()
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    });
 
             if (!response.IsSuccessStatusCode)
             {
@@ -59,5 +61,19 @@ public class ZohoMailingService(IOptions<EmailSettings> mailSettings, IHttpClien
             _logger.LogCritical("Zoho Api Mailing Service has Exception {exp}", ex);
             return Result.Fail(new OtpEmailSendingError("ZohoApi").CausedBy(ex));
         }
+    }
+    private object CreateTemplateMessage(string mailTo, string otp, string subject)
+    {
+        return new
+        {
+            Mail_template_key = _mailSettings.TemplateKey,
+            From = new EmailAddress(_mailSettings.SenderEmail, _mailSettings.SenderName),
+            To = new List<ToEmailAddress>() { new(new(mailTo, "noreply")) },
+            Merge_info = new
+            {
+                Otp = otp
+            },
+            Subject = subject
+        };
     }
 }
