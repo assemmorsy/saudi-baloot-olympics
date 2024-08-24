@@ -17,4 +17,14 @@ public sealed class TeamRepo(OlympicsContext _dbCtx)
         return Result.Ok(team);
     }
 
+    public async Task<Result<List<Team>>> GetAllAsync()
+    {
+        List<Team> teams = await _dbCtx.Teams
+            .Include(t => t.Players)
+            .AsSplitQuery()
+            .Where(t => t.Players.All(t => t.State == PlayerState.Approved))
+            .OrderByDescending(t => t.Id)
+            .ToListAsync();
+        return Result.Ok(teams);
+    }
 }

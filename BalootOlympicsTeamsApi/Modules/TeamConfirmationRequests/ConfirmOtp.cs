@@ -1,6 +1,7 @@
 using BalootOlympicsTeamsApi.Modules.Players;
 using FluentValidation;
 using MediatR;
+using static BalootOlympicsTeamsApi.Modules.Teams.GetTeamsEndpoint;
 
 namespace BalootOlympicsTeamsApi.Modules.TeamConfirmationRequests;
 
@@ -47,7 +48,6 @@ public sealed class ConfirmOtpDtoValidator : AbstractValidator<ConfirmOtpEndpoin
 
 public sealed class ConfirmOtpEndpoint : CarterModule
 {
-    public sealed record GetTeamDto(int Id, string Name, string State, List<Players.GetPlayerEndpoint.PlayerDto> Players);
     public sealed record ConfirmOtpDto(Guid RequestId, string FirstPlayerOtp, string SecondPlayerOtp);
     public override void AddRoutes(IEndpointRouteBuilder app)
     {

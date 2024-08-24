@@ -1,5 +1,5 @@
-using BalootOlympicsTeamsApi.Modules.TeamConfirmationRequests;
 using Riok.Mapperly.Abstractions;
+using static BalootOlympicsTeamsApi.Modules.Teams.GetTeamsEndpoint;
 namespace BalootOlympicsTeamsApi.Modules.Players;
 
 [Mapper]
@@ -10,6 +10,6 @@ public static partial class PlayersMapper
     [MapProperty(nameof(Player.NameAr), nameof(GetPlayerEndpoint.PlayerDto.Name))]
     public static partial GetPlayerEndpoint.PlayerDto PlayerToPlayerDto(this Player player);
 
-    public static partial ConfirmOtpEndpoint.GetTeamDto TeamToTeamDto(this Team team);
+    public static partial GetTeamDto TeamToTeamDto(this Team team);
 
 }
