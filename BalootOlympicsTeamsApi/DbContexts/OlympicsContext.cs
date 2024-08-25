@@ -5,6 +5,7 @@ public partial class OlympicsContext(DbContextOptions<OlympicsContext> options) 
     #region  dbSets
     public virtual DbSet<Player> Players { get; set; }
     public virtual DbSet<ConfirmationRequest> ConfirmationRequests { get; set; }
+    public virtual DbSet<Group> Groups { get; set; }
     public virtual DbSet<Team> Teams { get; set; }
 
     #endregion

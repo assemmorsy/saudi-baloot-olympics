@@ -4,8 +4,9 @@ public class Team
     public int Id { get; set; }
     public string Name
     {
-        get { return string.Join(" | ", Players.Select(p => p.NameAr.Split()[0])); }
+        get { return string.Join(" | ", Players.Select(p => string.Join(" ", [p.NameAr.Split()[0], p.NameAr.Split()[1]]))); }
     }
+
     public PlayerState State
     {
         get
@@ -19,4 +20,10 @@ public class Team
         }
     }
     public List<Player> Players { get; set; } = [];
+    public int? GroupId { get; set; }
+    public Group? Group { get; set; }
+    public override string ToString()
+    {
+        return $"{Id} - {Name}";
+    }
 }

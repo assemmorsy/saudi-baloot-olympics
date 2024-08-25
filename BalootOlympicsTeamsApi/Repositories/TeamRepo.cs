@@ -17,7 +17,7 @@ public sealed class TeamRepo(OlympicsContext _dbCtx)
         return Result.Ok(team);
     }
 
-    public async Task<Result<List<Team>>> GetAllAsync()
+    public async Task<Result<List<Team>>> GetAllApprovedAsync()
     {
         List<Team> teams = await _dbCtx.Teams
             .Include(t => t.Players)

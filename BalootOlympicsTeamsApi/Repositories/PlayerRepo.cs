@@ -23,4 +23,12 @@ public sealed class PlayerRepo(OlympicsContext _dbCtx)
             Result.Ok() :
             Result.Fail(new EntityNotFoundError<int>(teamId, nameof(Team)));
     }
+
+    public async Task<Result<List<Player>>> GetApprovedPlayersWithoutTeams()
+    {
+        var players = await _dbCtx.Players
+            .Where(p => p.State == PlayerState.Approved && p.TeamId == null).ToListAsync();
+        return Result.Ok(players);
+    }
+
 }

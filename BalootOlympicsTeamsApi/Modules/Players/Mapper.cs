@@ -12,4 +12,7 @@ public static partial class PlayersMapper
 
     public static partial GetTeamDto TeamToTeamDto(this Team team);
 
+    [MapperIgnoreSource(nameof(Team.Players))]
+    public static partial GetTeamWithoutPlayersDto TeamToTeamWithoutPlayersDto(this Team team);
+
 }
