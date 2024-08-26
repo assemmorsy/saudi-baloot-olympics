@@ -6,4 +6,5 @@ public class Group
     public required DateTimeOffset CheckInAt { get; set; }
     public required DateTimeOffset StartPlayAt { get; set; }
     public required List<Team> CompetingTeams { get; set; }
+    public List<Match> Matches { get; set; } = [];
 }

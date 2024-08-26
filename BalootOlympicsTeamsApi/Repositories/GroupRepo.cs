@@ -1,25 +1,28 @@
-// namespace BalootOlympicsTeamsApi.Repositories;
-// public sealed class GroupRepo(OlympicsContext _dbCtx)
-// {
-//     public Task<Result<Group>> GenerateFromAllTeams()
-//     {
-//         throw new NotImplementedException();
-//     }
-//     public Task<Result<Group>> Create()
-//     {
-//         throw new NotImplementedException();
-//     }
-//     public Task<Result<Group>> GetByIdAsync()
-//     {
-//         throw new NotImplementedException();
-//     }
-//     public Task<Result<Group>> GetAsync()
-//     {
-//         throw new NotImplementedException();
-//     }
-//     public Task<Result<Group>> DeleteAllAsync()
-//     {
-//         throw new NotImplementedException();
-//     }
 
-// }
+namespace BalootOlympicsTeamsApi.Repositories;
+public sealed class GroupRepo(OlympicsContext _dbCtx)
+{
+
+    public async Task<Result<Group>> GetByIdAsync(int groupId)
+    {
+        var group = await _dbCtx.Groups
+            .Include(g => g.CompetingTeams)
+            .ThenInclude(t => t.Players)
+            .AsSplitQuery()
+            .SingleOrDefaultAsync(g => g.Id == groupId);
+        return group == null ?
+            Result.Fail(new EntityNotFoundError<int>(groupId, nameof(Group))) :
+            Result.Ok(group);
+    }
+    public async Task<Result<List<Group>>> GetAsync()
+    {
+        var groups = await _dbCtx.Groups.Include(g => g.CompetingTeams).ThenInclude(t => t.Players).AsSplitQuery().OrderBy(g => g.StartPlayAt).ToListAsync();
+        return Result.Ok(groups);
+    }
+    public async Task<Result<int>> DeleteAllAsync()
+    {
+        var effected = await _dbCtx.Groups.Where(g => true).ExecuteDeleteAsync();
+        return Result.Ok(effected);
+    }
+
+}

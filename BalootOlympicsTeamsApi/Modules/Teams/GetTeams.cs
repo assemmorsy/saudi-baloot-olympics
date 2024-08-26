@@ -12,8 +12,8 @@ public sealed class GetTeamsService(TeamRepo _teamRepo)
 }
 public sealed class GetTeamsEndpoint : CarterModule
 {
-    public sealed record GetTeamDto(int Id, string Name, string State, List<GetPlayerEndpoint.PlayerDto> Players);
-    public sealed record GetTeamWithoutPlayersDto(int Id, string Name, string State);
+    public sealed record GetTeamDto(int Id, string Name, string State, int? GroupId, List<GetPlayerEndpoint.PlayerDto> Players);
+    public sealed record GetTeamWithoutPlayersDto(int Id, string Name, string State, int? GroupId);
 
     public override void AddRoutes(IEndpointRouteBuilder app)
     {

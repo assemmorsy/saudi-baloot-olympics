@@ -26,13 +26,10 @@ public class ValidatorResultFactory : IFluentValidationAutoValidationResultFacto
         var bodyError = new InvalidBodyInputError();
         foreach (ValidationFailure error in validationResult.Errors)
         {
-            bodyError.ValidationErrors.Add(error.PropertyName, [error.ErrorMessage]);
-            // bodyError.ValidationErrors.Add(errors., errors..Select(e =>
-            //         {
-            //             if (e.StartsWith("Error converting value"))
-            //                 return $"Invalid {errors.Key} , the provided data can't be casted to the target data type.";
-            //             return e;
-            //         }).ToList());
+            if (bodyError.ValidationErrors.TryGetValue(error.PropertyName, out var _))
+                bodyError.ValidationErrors[error.PropertyName].Add(error.ErrorMessage);
+            else
+                bodyError.ValidationErrors.Add(error.PropertyName, [error.ErrorMessage]);
         };
         return bodyError.HandleToIResult(context.HttpContext.TraceIdentifier);
     }

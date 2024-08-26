@@ -3,6 +3,7 @@ using System;
 using BalootOlympicsTeamsApi.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BalootOlympicsTeamsApi.Migrations
 {
     [DbContext(typeof(OlympicsContext))]
-    partial class OlympicsContextModelSnapshot : ModelSnapshot
+    [Migration("20240826133936_MakeMatchRefereeNullable")]
+    partial class MakeMatchRefereeNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,7 +174,7 @@ namespace BalootOlympicsTeamsApi.Migrations
 
                     b.HasIndex("UsTeamId");
 
-                    b.ToTable("matches", (string)null);
+                    b.ToTable("match", (string)null);
                 });
 
             modelBuilder.Entity("BalootOlympicsTeamsApi.Entities.Player", b =>

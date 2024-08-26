@@ -10,7 +10,6 @@ public static class FluentValidationConfigurations
     {
 
         services.AddValidatorsFromAssemblyContaining<Program>();
-
         services.AddFluentValidationAutoValidation(configuration =>
         {
             configuration.OverrideDefaultResultFactoryWith<ValidatorResultFactory>();
