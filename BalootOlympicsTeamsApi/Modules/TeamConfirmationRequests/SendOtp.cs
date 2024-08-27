@@ -71,11 +71,10 @@ public sealed class SendOtpEndpoint : CarterModule
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("/send-team-confirmation-otp",
-            async Task<IResult> (SendOtpDto request, HttpContext context, SendConfirmTeamOtpService service) =>
-                (await service.ExecuteAsync(request)).ResolveToIResult((confirmReq) =>
-                TypedResults.Ok(new SuccessResponse<ResponseDto>(
-                    new ResponseDto(confirmReq.Id), "otp sent successfully.")),
-                    context.TraceIdentifier))
+            IResult (SendOtpDto request, HttpContext context, SendConfirmTeamOtpService service) =>
+            {
+                return TypedResults.BadRequest(new { message = "تم اغلاق باب التقديم " });
+            })
             .WithOpenApi(op =>
             {
                 op.Summary = "Send confirmation to the provided phones numbers";
