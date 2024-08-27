@@ -46,7 +46,7 @@ public sealed class GenerateGroupsService(GroupRepo _groupRepo, OlympicsContext 
                 StartPlayAt = PlayAtDate.AddHours(indexOfGroupInThisDate * GenerationConstants.HoursBetweenEachGroup + GenerationConstants.HoursBetweenCheckInAndPlayOfTheGroup),
                 CheckInAt = PlayAtDate.AddHours(indexOfGroupInThisDate * GenerationConstants.HoursBetweenEachGroup),
                 CompetingTeams = [],
-                Name = $"{i + 1} - مجموعة"
+                Name = $"مجموعة {i + 1}"
             };
             for (int j = 0; j < TeamsCount; j++)
             {
