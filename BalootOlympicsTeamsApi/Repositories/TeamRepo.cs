@@ -12,6 +12,7 @@ public sealed class TeamRepo(OlympicsContext _dbCtx)
     {
         Team? team = await _dbCtx.Teams
             .Include(t => t.Players)
+            .Include(t => t.Group)
             .SingleOrDefaultAsync(t => t.Id == id);
         if (team == null) return Result.Fail(new EntityNotFoundError<int>(id, nameof(Team)));
         return Result.Ok(team);

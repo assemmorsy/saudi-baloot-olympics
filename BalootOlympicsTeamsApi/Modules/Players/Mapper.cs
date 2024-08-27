@@ -13,7 +13,7 @@ public static partial class PlayersMapper
     [MapProperty(nameof(Player.NameAr), nameof(GetPlayerEndpoint.PlayerDto.Name))]
     public static partial GetPlayerEndpoint.PlayerDto PlayerToPlayerDto(this Player player);
 
-    [MapperIgnoreSource(nameof(Team.Group))]
+    // [MapperIgnoreSource(nameof(Team.Group))]
     public static partial GetTeamDto TeamToTeamDto(this Team team);
 
     [MapperIgnoreSource(nameof(Team.Players))]

@@ -6,7 +6,10 @@ public sealed class GetPlayerService(PlayerRepo _playerRepo, TeamRepo _teamRepo)
     {
         if (player.TeamId != null)
             (await _teamRepo.GetByIdAsync(player.TeamId.Value))
-                .OnSuccess(team => player.Team = team);
+                .OnSuccess(team =>
+                {
+                    player.Team = team;
+                });
         return Result.Ok(player);
     };
     public async Task<Result<Player>> ExecuteAsync(GetPlayerEndpoint.GetPlayerByPhoneDto dto) =>

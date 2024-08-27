@@ -1,5 +1,6 @@
 using System.Text;
 using BalootOlympicsTeamsApi.Modules.Players;
+using static BalootOlympicsTeamsApi.Modules.Groups.GenerateGroupsEndpoint;
 
 namespace BalootOlympicsTeamsApi.Modules.Teams;
 
@@ -12,7 +13,7 @@ public sealed class GetTeamsService(TeamRepo _teamRepo)
 }
 public sealed class GetTeamsEndpoint : CarterModule
 {
-    public sealed record GetTeamDto(int Id, string Name, string State, int? GroupId, List<GetPlayerEndpoint.PlayerDto> Players);
+    public sealed record GetTeamDto(int Id, string Name, string State, int? GroupId, GetGroupDto? Group, List<GetPlayerEndpoint.PlayerDto> Players);
     public sealed record GetTeamWithoutPlayersDto(int Id, string Name, string State, int? GroupId);
 
     public override void AddRoutes(IEndpointRouteBuilder app)

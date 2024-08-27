@@ -6,9 +6,6 @@ public sealed class GroupRepo(OlympicsContext _dbCtx)
     public async Task<Result<Group>> GetByIdAsync(int groupId)
     {
         var group = await _dbCtx.Groups
-            .Include(g => g.CompetingTeams)
-            .ThenInclude(t => t.Players)
-            .AsSplitQuery()
             .SingleOrDefaultAsync(g => g.Id == groupId);
         return group == null ?
             Result.Fail(new EntityNotFoundError<int>(groupId, nameof(Group))) :
