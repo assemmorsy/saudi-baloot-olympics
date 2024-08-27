@@ -5,14 +5,15 @@ namespace BalootOlympicsTeamsApi.Modules.Referees;
 
 public sealed class GetRefereeMatchesService(OlympicsContext _dbCtx)
 {
-    public async Task<Result<List<Match>>> ExecuteAsync(Guid refereeId, DateOnly dateFilter)
+    public async Task<Result<List<Match>>> ExecuteAsync(Guid refereeId)
     {
         var matches = await _dbCtx.Matches
             .Include(m => m.UsTeam)
             .Include(m => m.ThemTeam)
             .AsSplitQuery()
             .AsTracking()
-            .Where(m => m.RefereeId == refereeId && DateOnly.FromDateTime(m.StartAt.DateTime) == dateFilter)
+            .Where(m => m.RefereeId == refereeId)
+            .OrderBy(m => m.StartAt)
             .ToListAsync();
 
         List<int> teamsIds = [];
@@ -35,9 +36,9 @@ public sealed class GetRefereeMatchesEndpoint : CarterModule
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("/referee/{referee_id}/matches",
-            async Task<IResult> (Guid referee_id, DateOnly dateFilter, HttpContext context, [FromServices] GetRefereeMatchesService service) =>
+            async Task<IResult> (Guid referee_id, HttpContext context, [FromServices] GetRefereeMatchesService service) =>
             {
-                return (await service.ExecuteAsync(referee_id, dateFilter))
+                return (await service.ExecuteAsync(referee_id))
                 .ResolveToIResult(matches =>
                 {
                     var res = new SuccessResponse<List<GetMatchWithPlayersDto>>(
