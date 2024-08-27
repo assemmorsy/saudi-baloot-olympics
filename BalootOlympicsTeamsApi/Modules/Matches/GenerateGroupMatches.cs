@@ -83,6 +83,10 @@ public sealed class GenerateGroupMatchesService(OlympicsContext _dbCtx)
         for (int i = 0; i < matches.Count; i++)
         {
             matches[i].StartAt = group.StartPlayAt.AddHours(GenerationConstants.MatchDurationInHours * (maxLevel - matches[i].Level));
+        }
+        matches = [.. matches.OrderBy(m => m.Level).ThenBy(m => m.Id)];
+        for (int i = 0; i < matches.Count; i++)
+        {
             matches[i].TableNumber = i + 1;
         }
         await _dbCtx.SaveChangesAsync();
