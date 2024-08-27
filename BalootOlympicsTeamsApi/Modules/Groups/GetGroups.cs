@@ -22,7 +22,5 @@ public sealed class GetGroupsEndpoint : CarterModule
                     return Results.Ok(res);
                 }, context.TraceIdentifier);
             });
-
     }
-
 }

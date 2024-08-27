@@ -16,3 +16,6 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 global using FluentResults;
 global using Carter;
+
+global using FluentValidation;
+global using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;

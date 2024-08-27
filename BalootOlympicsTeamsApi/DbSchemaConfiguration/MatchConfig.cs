@@ -20,6 +20,12 @@ public class MatchConfiguration : IEntityTypeConfiguration<Match>
             .Property(e => e.RefereeId)
             .HasColumnName("referee_id");
 
+        builder
+            .HasOne(e => e.Referee)
+            .WithMany()
+            .HasForeignKey(e => e.RefereeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Property(e => e.StartAt)
             .HasColumnType("timestamp with time zone")
             .HasConversion(ConfigurationUtils.DateTimeOffsetValueConverter)

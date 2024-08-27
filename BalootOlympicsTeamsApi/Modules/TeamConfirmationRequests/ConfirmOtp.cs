@@ -62,6 +62,8 @@ public sealed class ConfirmOtpEndpoint : CarterModule
             {
                 op.Summary = "endpoint receives Otps and request id then validate the value then add the team";
                 return op;
-            });
+            })
+            .AddFluentValidationAutoValidation();
+
     }
 }

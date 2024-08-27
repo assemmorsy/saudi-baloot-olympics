@@ -1,9 +1,4 @@
-
 using BalootOlympicsTeamsApi.Modules.Players;
-using FluentValidation;
-using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
-using static BalootOlympicsTeamsApi.Modules.Teams.GetTeamsEndpoint;
-
 namespace BalootOlympicsTeamsApi.Modules.Groups;
 
 public sealed class GenerateGroupsService(GroupRepo _groupRepo, OlympicsContext _dbCtx)
@@ -89,7 +84,8 @@ public sealed class GenerateGroupsEndpoint : CarterModule
                     var res = new SuccessResponse<List<GetGroupDto>>(groups.Select(g => PlayersMapper.GroupToGroupDto(g)).ToList(), "Groups Generated Successfully");
                     return Results.Ok(res);
                 }, context.TraceIdentifier);
-            }).AddFluentValidationAutoValidation();
+            })
+            .AddFluentValidationAutoValidation();
     }
 
 }

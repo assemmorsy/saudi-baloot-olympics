@@ -8,6 +8,7 @@ public partial class OlympicsContext(DbContextOptions<OlympicsContext> options) 
     public virtual DbSet<Group> Groups { get; set; }
     public virtual DbSet<Team> Teams { get; set; }
     public virtual DbSet<Match> Matches { get; set; }
+    public virtual DbSet<Referee> Referees { get; set; }
 
     #endregion
     protected override void OnModelCreating(ModelBuilder modelBuilder)

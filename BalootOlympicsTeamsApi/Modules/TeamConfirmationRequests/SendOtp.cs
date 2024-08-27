@@ -81,6 +81,8 @@ public sealed class SendOtpEndpoint : CarterModule
                 op.Summary = "Send confirmation to the provided phones numbers";
                 op.Description = "this will check for this phone number existence then if these players not joined to a team it will send confirmation to the email and the whatsapp number.";
                 return op;
-            });
+            })
+            .AddFluentValidationAutoValidation();
+
     }
 }

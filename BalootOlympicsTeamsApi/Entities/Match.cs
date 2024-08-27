@@ -9,10 +9,9 @@ public class Match
     public required int GroupId { get; set; }
     public Guid? QydhaGameId { get; set; }
     public Guid? RefereeId { get; set; }
+    public Referee? Referee { get; set; }
     public required DateTimeOffset StartAt { get; set; }
-
     public MatchSide? Winner { get; set; }
-
     public Team? UsTeam { get; set; }
     public int? UsTeamId { get; set; }
     public Match? MatchQualifyUsTeam { get; set; }

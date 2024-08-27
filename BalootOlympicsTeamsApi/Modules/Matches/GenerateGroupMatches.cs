@@ -1,6 +1,6 @@
 using BalootOlympicsTeamsApi.Extensions;
 using BalootOlympicsTeamsApi.Modules.Players;
-using FluentValidation;
+
 using static BalootOlympicsTeamsApi.Modules.Matches.GetGroupMatchesEndpoint;
 namespace BalootOlympicsTeamsApi.Modules.Matches;
 
@@ -135,12 +135,14 @@ public sealed class GenerateGroupMatchesEndpoint : CarterModule
                 return (await service.ExecuteAsync(group_id, dto))
                 .ResolveToIResult((matches) =>
                 {
-                    var res = new SuccessResponse<List<GetMatchDto>>(
+                    var res = new SuccessResponse<List<GetMatchWithoutPlayersDto>>(
                         matches.Select(m => PlayersMapper.MatchToMatchDto(m)).ToList(),
                         "matches fetched successfully.");
                     return TypedResults.Ok(res);
                 }, context.TraceIdentifier);
-            });
+            })
+            .AddFluentValidationAutoValidation();
+
     }
 
 }
