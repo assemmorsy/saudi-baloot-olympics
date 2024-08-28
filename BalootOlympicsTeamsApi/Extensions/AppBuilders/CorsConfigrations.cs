@@ -17,7 +17,8 @@ public static class CorsConfigurations
                 builder
                     .WithOrigins([.. origins])
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .AllowCredentials();
             });
         });
         return MyAllowSpecificOrigins;
