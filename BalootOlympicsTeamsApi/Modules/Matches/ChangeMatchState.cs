@@ -75,19 +75,29 @@ public sealed class ChangeMatchStateService(OlympicsContext _dbCtx)
 
         if (bothTeamsWithdrawInThemQualifiedMatch || bothTeamsWithdrawInUsQualifiedMatch)
         {
-            match.State = MatchState.Ended;
             if (bothTeamsWithdrawInThemQualifiedMatch && bothTeamsWithdrawInUsQualifiedMatch)
             {
+                match.State = MatchState.Ended;
                 match.Winner = null;
                 return null;
             }
             else if (bothTeamsWithdrawInThemQualifiedMatch)
             {
+                if (match.MatchQualifyUsTeam != null && match.MatchQualifyUsTeam.State != MatchState.Ended)
+                {
+                    return null;
+                }
+                match.State = MatchState.Ended;
                 match.Winner = MatchSide.Us;
                 return match.UsTeamId;
             }
             else
             {
+                if (match.MatchQualifyThemTeam != null && match.MatchQualifyThemTeam.State != MatchState.Ended)
+                {
+                    return null;
+                }
+                match.State = MatchState.Ended;
                 match.Winner = MatchSide.Them;
                 return match.ThemTeamId;
             }

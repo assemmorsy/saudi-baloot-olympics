@@ -28,7 +28,8 @@ public enum MatchState
 {
     Created,
     Running,
-    Ended
+    Ended,
+    Neglected
 }
 
 public enum MatchSide
