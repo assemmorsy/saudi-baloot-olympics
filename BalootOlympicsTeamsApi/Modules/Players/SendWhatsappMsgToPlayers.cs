@@ -1,29 +1,29 @@
 namespace BalootOlympicsTeamsApi.Modules.Players;
 
-public sealed class SendWhatsappMsgToPlayersService(PlayerRepo _playerRepo, WhatsAppService _whatsAppService)
+public sealed class SendWhatsappMsgToPlayersService(OlympicsContext _dbCtx, WhatsAppService _whatsAppService)
 {
-    public async Task<Result> ExecuteAsync() =>
-        (await _playerRepo.GetApprovedPlayersWithoutTeams())
-        .OnSuccessAsync(async players =>
-        {
-            foreach (var p in players)
-            {
-                await _whatsAppService.SendMessageFromTemplateAsync(p.Phone, "request_join_team");
-            }
-            return Result.Ok();
-        });
-
-}
-public sealed class SendWhatsappMsgToPlayersEndpoint : CarterModule
-{
-    public override void AddRoutes(IEndpointRouteBuilder app)
+    public async Task<Result> ExecuteAsync()
     {
-        app.MapPost("/players/send-whatsapp-alert-to-join-teams/",
-            async Task<IResult> (HttpContext context, [FromServices] SendWhatsappMsgToPlayersService service) =>
+        var teams = await _dbCtx.Teams.Include(t => t.Players).Where(t => t.GroupId != null).ToListAsync();
+        foreach (var t in teams)
+        {
+            foreach (var p in t.Players)
             {
-                await service.ExecuteAsync();
-                return Results.Ok("Done");
-            });
+                await _whatsAppService.SendMessageFromTemplateAsync(p.Phone, "approved_teams_reminder");
+            }
+        }
+        return Result.Ok();
     }
-
 }
+// public sealed class SendWhatsappMsgToPlayersEndpoint : CarterModule
+// {
+//     public override void AddRoutes(IEndpointRouteBuilder app)
+//     {
+//         app.MapPost("/players/send-whatsapp-alert-to-join-teams/",
+//             async Task<IResult> (HttpContext context, [FromServices] SendWhatsappMsgToPlayersService service) =>
+//             {
+//                 await service.ExecuteAsync();
+//                 return Results.Ok("Done");
+//             });
+//     }
+// }

@@ -34,7 +34,6 @@ public enum MatchState
 public enum MatchSide
 {
     Us,
-    Them,
-    TwoTeamsWithdraw
+    Them
 }
 

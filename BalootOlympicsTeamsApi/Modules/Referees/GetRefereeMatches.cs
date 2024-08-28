@@ -26,7 +26,7 @@ public sealed class GetRefereeMatchesService(OlympicsContext _dbCtx)
         });
         teamsIds = teamsIds.Distinct().ToList();
         await _dbCtx.Players.AsTracking().Where(p => p.TeamId != null && teamsIds.Contains(p.TeamId.Value)).ToListAsync();
-        await _dbCtx.SaveChangesAsync();
+        // await _dbCtx.SaveChangesAsync();
         return Result.Ok(matches);
     }
 }
