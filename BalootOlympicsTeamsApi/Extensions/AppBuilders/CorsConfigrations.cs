@@ -11,7 +11,7 @@ public static class CorsConfigurations
         {
             options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
             {
-                List<string> origins = ["https://test-signalr.netlify.app", "https://qayedhaadmin.web.app", "https://qydha.com"];
+                List<string> origins = ["https://test-signalr.netlify.app", "https://qydha-staging.netlify.app", "https://qayedhaadmin.web.app", "https://qydha.com"];
                 if (!environment.IsProduction())
                     origins.AddRange(["http://localhost:5173", "https://localhost:5173", "http://localhost:3000", "http://localhost:4200"]);
                 builder
