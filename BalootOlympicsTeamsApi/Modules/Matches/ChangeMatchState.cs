@@ -1,4 +1,7 @@
+using System.Text.Json;
 using BalootOlympicsTeamsApi.Modules.Players;
+using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using static BalootOlympicsTeamsApi.Modules.Matches.ChangeMatchStateEndpoint;
 using static BalootOlympicsTeamsApi.Modules.Matches.GetGroupMatchesEndpoint;
 
@@ -138,7 +141,6 @@ public sealed class StartMatchDtoValidator : AbstractValidator<StartMatchDto>
         RuleFor(x => x.GameId).NotEmpty();
     }
 }
-
 public sealed class EndMatchDtoValidator : AbstractValidator<EndMatchDto>
 {
     public EndMatchDtoValidator()
@@ -149,6 +151,44 @@ public sealed class EndMatchDtoValidator : AbstractValidator<EndMatchDto>
         });
     }
 }
+
+
+public sealed class GroupBracketChangedNotification(int groupId) : INotification
+{
+    public int GroupId { get; } = groupId;
+}
+public sealed class SendOtpHandler(IHubContext<BracketHub, IBracketClient> hubContext, OlympicsContext _dbCtx) : INotificationHandler<GroupBracketChangedNotification>
+{
+    public async Task Handle(GroupBracketChangedNotification notification, CancellationToken cancellationToken)
+    {
+        var group = await _dbCtx.Groups
+                          .Include(g => g.CompetingTeams)
+                          .ThenInclude(t => t.Players)
+                          .AsSplitQuery()
+                          .AsTracking()
+                          .SingleOrDefaultAsync(g => g.Id == notification.GroupId);
+
+        if (group == null)
+            return;
+        // JsonSerializer.Serialize(new EntityNotFoundError<int>(notification.GroupId, nameof(Group)).ToErrorResponse(string.Empty));
+
+        var matches = await _dbCtx.Matches
+            .Where(m => m.GroupId == notification.GroupId)
+            .Include(m => m.UsTeam)
+            .Include(m => m.ThemTeam)
+            .AsSplitQuery()
+            .AsTracking()
+            .OrderByDescending(m => m.Level).ThenBy(m => m.TableNumber)
+            .ToListAsync();
+        var res = new SuccessResponse<List<GetMatchWithoutPlayersDto>>(
+            matches.Select(m => PlayersMapper.MatchToMatchDto(m)).ToList(),
+            "matches fetched successfully.");
+
+        await hubContext.Clients.All.BracketChanged(notification.GroupId.ToString(), JsonSerializer.Serialize(res));
+    }
+}
+
+
 public sealed class ChangeMatchStateEndpoint : CarterModule
 {
     public sealed record StartMatchDto(Guid GameId);
@@ -157,9 +197,14 @@ public sealed class ChangeMatchStateEndpoint : CarterModule
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("/matches/{match_id}/start",
-            async Task<IResult> (int match_id, StartMatchDto dto, HttpContext context, [FromServices] ChangeMatchStateService service) =>
+            async Task<IResult> (int match_id, StartMatchDto dto, HttpContext context, IMediator _mediator, [FromServices] ChangeMatchStateService service) =>
             {
                 return (await service.StartMatchAsync(match_id, dto))
+                    .OnSuccessAsync(async (match) =>
+                    {
+                        await _mediator.Publish(new GroupBracketChangedNotification(match.GroupId));
+                        return Result.Ok(match);
+                    })
                     .ResolveToIResult(match =>
                     {
                         var res = new SuccessResponse<GetMatchWithoutPlayersDto>(
@@ -171,12 +216,13 @@ public sealed class ChangeMatchStateEndpoint : CarterModule
             .AddFluentValidationAutoValidation();
 
         app.MapPost("/matches/{match_id}/end",
-            async Task<IResult> (int match_id, EndMatchDto dto, HttpContext context, [FromServices] ChangeMatchStateService service) =>
+            async Task<IResult> (int match_id, EndMatchDto dto, HttpContext context, IMediator _mediator, [FromServices] ChangeMatchStateService service) =>
             {
                 return (await service.EndMatchAsync(match_id, dto))
                 .OnSuccessAsync(async match =>
                 {
                     await service.UpdateGroupBracket(match.GroupId);
+                    await _mediator.Publish(new GroupBracketChangedNotification(match.GroupId));
                     return Result.Ok(match);
                 })
                 .ResolveToIResult(match =>

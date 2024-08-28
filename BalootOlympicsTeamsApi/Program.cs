@@ -23,6 +23,7 @@ builder.Services.RegisterRepos(builder.Configuration, builder.Environment);
 builder.Services.ConfigureFluentValidation();
 builder.Services.ConfigureMediatR();
 builder.Services.AddCarter();
+builder.Services.AddSignalR();
 
 LoggerServiceExtension.AddLoggerConfiguration(builder.Configuration, builder.Environment);
 builder.Host.UseSerilog();
@@ -37,7 +38,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 // app.UseHttpsRedirection();
-
+app.MapHub<BracketHub>("/bracket-hub");
 app.UseSerilogRequestLogging();
 app.MapCarter();
 

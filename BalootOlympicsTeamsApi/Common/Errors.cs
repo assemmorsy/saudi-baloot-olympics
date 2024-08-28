@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// using Google.Apis.Auth.OAuth2.Responses;
+// using Microsoft.AspNetCore.Mvc;
 
 namespace BalootOlympicsTeamsApi.Common;
 
@@ -6,6 +7,7 @@ public abstract class ResultError(string msg, ErrorType errorCode, int statusCod
 {
     public ErrorType ErrorCode { get; set; } = errorCode;
     public int StatusCode { get; set; } = statusCode;
+    public ErrorResponse ToErrorResponse(string traceId) => new(ErrorCode, Message, traceId);
     public virtual IActionResult ToIActionResult(string traceId) =>
         new JsonResult(new ErrorResponse(ErrorCode, Message, traceId)) { StatusCode = StatusCode };
     public virtual IResult ToIResult(string traceId) =>

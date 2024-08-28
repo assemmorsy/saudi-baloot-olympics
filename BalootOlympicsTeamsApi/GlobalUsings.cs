@@ -6,7 +6,7 @@ global using BalootOlympicsTeamsApi.Extensions.AppBuilders;
 global using BalootOlympicsTeamsApi.DbContexts;
 global using BalootOlympicsTeamsApi.Settings;
 global using BalootOlympicsTeamsApi.Repositories;
-
+global using BalootOlympicsTeamsApi.Hubs;
 global using Microsoft.AspNetCore.Mvc;
 
 global using Microsoft.Extensions.Options;
