@@ -11,14 +11,11 @@ public static class CorsConfigurations
         {
             options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
             {
-                if (environment.IsProduction())
-                    builder
-                        .WithOrigins("https://test-signalr.netlify.app", "https://qayedhaadmin.web.app", "https://qydha.com");
-                else
-                    builder
-                        .WithOrigins("http://localhost:5173", "https://localhost:5173", "http://localhost:3000", "http://localhost:4200", "https://qayedhaadmin.web.app");
+                List<string> origins = ["https://test-signalr.netlify.app", "https://qayedhaadmin.web.app", "https://qydha.com"];
+                if (!environment.IsProduction())
+                    origins.AddRange(["http://localhost:5173", "https://localhost:5173", "http://localhost:3000", "http://localhost:4200"]);
                 builder
-                    // .AllowAnyOrigin()
+                    .WithOrigins([.. origins])
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             });
