@@ -1,65 +1,66 @@
+using System.Linq.Expressions;
+using static BalootOlympicsTeamsApi.Modules.Players.GetPlayerService;
+
 namespace BalootOlympicsTeamsApi.Modules.Players;
 
-public sealed class GetPlayerService(PlayerRepo _playerRepo, TeamRepo _teamRepo)
+public sealed class GetPlayerService(OlympicsContext _dbCtx)
 {
-    private readonly Func<Player, Task<Result<Player>>> PopulateTeam = async (player) =>
+    public record PlayerStateData(Player Player, Team? Team, int? Level);
+    public async Task<Result<PlayerStateData>> Get<T>(Expression<Func<Player, bool>> predicate, T identifier)
     {
-        if (player.TeamId != null)
-            (await _teamRepo.GetByIdAsync(player.TeamId.Value))
-                .OnSuccess(team =>
-                {
-                    player.Team = team;
-                });
-        return Result.Ok(player);
-    };
-    public async Task<Result<Player>> ExecuteAsync(GetPlayerEndpoint.GetPlayerByPhoneDto dto) =>
-        (await _playerRepo.GetPlayerByAsync(p => p.Phone == dto.Phone, dto.Phone))
-        .OnSuccessAsync(PopulateTeam);
-    public async Task<Result<Player>> ExecuteAsync(GetPlayerEndpoint.GetPlayerByEmailDto dto) =>
-        (await _playerRepo.GetPlayerByAsync(p => p.Email == dto.Email, dto.Email))
-        .OnSuccessAsync(PopulateTeam);
+        Player? player = await _dbCtx.Players
+          .Include(p => p.Team)
+          .SingleOrDefaultAsync(predicate);
+        if (player == null) return Result.Fail(new EntityNotFoundError<T>(identifier, nameof(Player)));
+        if (player.TeamId == null) return Result.Ok(new PlayerStateData(player, null, null));
+        Team? team = await _dbCtx.Teams
+           .Include(t => t.Players)
+           .Include(t => t.Group)
+           .SingleOrDefaultAsync(t => t.Id == player.TeamId);
+        if (team == null) return Result.Fail(new EntityNotFoundError<int>(player.TeamId.Value, nameof(Team)));
+        player.Team = team;
+        var matches = await _dbCtx.Matches
+            .Where(m => m.UsTeamId == team.Id || m.ThemTeamId == team.Id)
+            .OrderByDescending(m => m.Level).Take(1)
+            .ToListAsync();
+        if (matches.Count == 0) return Result.Ok(new PlayerStateData(player, team, null));
 
-    public async Task<Result<Player>> ExecuteAsync(GetPlayerEndpoint.GetPlayerByIdDto dto) =>
-        (await _playerRepo.GetPlayerByAsync(p => p.Id == dto.Id, dto.Id))
-        .OnSuccessAsync(PopulateTeam);
-
+        return Result.Ok(new PlayerStateData(player, team, matches.First().Level));
+    }
 }
 public sealed class GetPlayerEndpoint : CarterModule
 {
-    public sealed record GetPlayerByPhoneDto(string Phone);
-    public sealed record GetPlayerByIdDto(string Id);
-    public sealed record GetPlayerByEmailDto(string Email);
     public sealed record PlayerDto(string Id, string Name, string Phone, string Email, string State, string Comment, int? TeamId);
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        static IResult ResolveResponse(Player player)
+        static IResult ResolveResponse(PlayerStateData data)
         {
             return TypedResults.Ok(new SuccessResponse(new
             {
-                Player = PlayersMapper.PlayerToPlayerDto(player),
-                Team = player.TeamId != null && player.Team != null ? PlayersMapper.TeamToTeamDto(player.Team) : null
+                Player = PlayersMapper.PlayerToPlayerDto(data.Player),
+                Team = data.Team != null ? PlayersMapper.TeamToTeamDto(data.Team) : null,
+                data.Level
             }, "player fetched successfully."));
-
         }
 
         app.MapGet("/players/phone/{phone}",
                 async Task<IResult> (string phone, HttpContext context, [FromServices] GetPlayerService service) =>
                 {
-                    return (await service.ExecuteAsync(new GetPlayerByPhoneDto(phone)))
+                    return (await service.Get((p) => p.Phone == phone.Trim(), phone))
                     .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
                 });
 
         app.MapGet("/players/email/{email}",
             async Task<IResult> (string email, HttpContext context, [FromServices] GetPlayerService service) =>
             {
-                return (await service.ExecuteAsync(new GetPlayerByEmailDto(email)))
-                .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
+                return (await service.Get((p) => p.Email == email.Trim(), email))
+                   .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
             });
         app.MapGet("/players/{id}",
             async Task<IResult> (string id, HttpContext context, [FromServices] GetPlayerService service) =>
             {
-                return (await service.ExecuteAsync(new GetPlayerByIdDto(id)))
-                .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
+                return (await service.Get((p) => p.Id == id.Trim(), id))
+                   .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
             });
 
     }
