@@ -39,7 +39,8 @@ public sealed class GetPlayerEndpoint : CarterModule
             {
                 Player = PlayersMapper.PlayerToPlayerDto(data.Player),
                 Team = data.Team != null ? PlayersMapper.TeamToTeamDto(data.Team) : null,
-                data.Level
+                data.Level,
+                data.TableNumber
             }, "player fetched successfully."));
         }
 
