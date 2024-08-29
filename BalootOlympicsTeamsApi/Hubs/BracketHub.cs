@@ -33,7 +33,7 @@ public class BracketHub(OlympicsContext _dbCtx) : Hub<IBracketClient>
         var res = new SuccessResponse<List<GetMatchWithoutPlayersDto>>(
             matches.Select(m => PlayersMapper.MatchToMatchDto(m)).ToList(),
             "matches fetched successfully.");
-        return JsonSerializer.Serialize(res);
+        return JsonSerializer.Serialize(res, SerializationConstants.SerializerOptions);
 
     }
 

@@ -184,7 +184,7 @@ public sealed class SendOtpHandler(IHubContext<BracketHub, IBracketClient> hubCo
             matches.Select(m => PlayersMapper.MatchToMatchDto(m)).ToList(),
             "matches fetched successfully.");
 
-        await hubContext.Clients.All.BracketChanged(notification.GroupId.ToString(), JsonSerializer.Serialize(res));
+        await hubContext.Clients.All.BracketChanged(notification.GroupId.ToString(), JsonSerializer.Serialize(res, SerializationConstants.SerializerOptions));
     }
 }
 
