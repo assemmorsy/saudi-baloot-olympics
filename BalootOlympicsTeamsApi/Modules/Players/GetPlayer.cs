@@ -5,14 +5,14 @@ namespace BalootOlympicsTeamsApi.Modules.Players;
 
 public sealed class GetPlayerService(OlympicsContext _dbCtx)
 {
-    public record PlayerStateData(Player Player, Team? Team, int? Level);
+    public record PlayerStateData(Player Player, Team? Team, int? Level, int? TableNumber);
     public async Task<Result<PlayerStateData>> Get<T>(Expression<Func<Player, bool>> predicate, T identifier)
     {
         Player? player = await _dbCtx.Players
           .Include(p => p.Team)
           .SingleOrDefaultAsync(predicate);
         if (player == null) return Result.Fail(new EntityNotFoundError<T>(identifier, nameof(Player)));
-        if (player.TeamId == null) return Result.Ok(new PlayerStateData(player, null, null));
+        if (player.TeamId == null) return Result.Ok(new PlayerStateData(player, null, null, null));
         Team? team = await _dbCtx.Teams
            .Include(t => t.Players)
            .Include(t => t.Group)
@@ -23,9 +23,9 @@ public sealed class GetPlayerService(OlympicsContext _dbCtx)
             .Where(m => m.UsTeamId == team.Id || m.ThemTeamId == team.Id)
             .OrderByDescending(m => m.Level).Take(1)
             .ToListAsync();
-        if (matches.Count == 0) return Result.Ok(new PlayerStateData(player, team, null));
+        if (matches.Count == 0) return Result.Ok(new PlayerStateData(player, team, null, null));
 
-        return Result.Ok(new PlayerStateData(player, team, matches.First().Level));
+        return Result.Ok(new PlayerStateData(player, team, matches.First().Level, matches.First().TableNumber));
     }
 }
 public sealed class GetPlayerEndpoint : CarterModule
