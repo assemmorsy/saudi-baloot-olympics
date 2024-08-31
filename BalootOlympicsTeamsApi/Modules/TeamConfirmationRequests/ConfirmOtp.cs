@@ -51,19 +51,19 @@ public sealed class ConfirmOtpEndpoint : CarterModule
     public sealed record ConfirmOtpDto(Guid RequestId, string FirstPlayerOtp, string SecondPlayerOtp);
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/confirm-team-otp",
-            async Task<IResult> (ConfirmOtpDto request, HttpContext context, ConfirmTeamOtpService service) =>
-                (await service.ExecuteAsync(request))
-                .ResolveToIResult((team) =>
-                    TypedResults.Ok(new SuccessResponse<GetTeamDto>(PlayersMapper.TeamToTeamDto(team)
-                        , "Team Created successfully.")),
-                        context.TraceIdentifier))
-            .WithOpenApi(op =>
-            {
-                op.Summary = "endpoint receives Otps and request id then validate the value then add the team";
-                return op;
-            })
-            .AddFluentValidationAutoValidation();
+        // app.MapPost("/confirm-team-otp",
+        //     async Task<IResult> (ConfirmOtpDto request, HttpContext context, ConfirmTeamOtpService service) =>
+        //         (await service.ExecuteAsync(request))
+        //         .ResolveToIResult((team) =>
+        //             TypedResults.Ok(new SuccessResponse<GetTeamDto>(PlayersMapper.TeamToTeamDto(team)
+        //                 , "Team Created successfully.")),
+        //                 context.TraceIdentifier))
+        //     .WithOpenApi(op =>
+        //     {
+        //         op.Summary = "endpoint receives Otps and request id then validate the value then add the team";
+        //         return op;
+        //     })
+        //     .AddFluentValidationAutoValidation();
 
     }
 }

@@ -196,44 +196,44 @@ public sealed class ChangeMatchStateEndpoint : CarterModule
 
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/matches/{match_id}/start",
-            async Task<IResult> (int match_id, StartMatchDto dto, HttpContext context, IMediator _mediator, [FromServices] ChangeMatchStateService service) =>
-            {
-                return (await service.StartMatchAsync(match_id, dto))
-                    .OnSuccessAsync(async (match) =>
-                    {
-                        await _mediator.Publish(new GroupBracketChangedNotification(match.GroupId));
-                        return Result.Ok(match);
-                    })
-                    .ResolveToIResult(match =>
-                    {
-                        var res = new SuccessResponse<GetMatchWithoutPlayersDto>(
-                            PlayersMapper.MatchToMatchDto(match),
-                            "match Started successfully.");
-                        return TypedResults.Ok(res);
-                    }, context.TraceIdentifier);
-            })
-            .AddFluentValidationAutoValidation();
+        // app.MapPost("/matches/{match_id}/start",
+        //     async Task<IResult> (int match_id, StartMatchDto dto, HttpContext context, IMediator _mediator, [FromServices] ChangeMatchStateService service) =>
+        //     {
+        //         return (await service.StartMatchAsync(match_id, dto))
+        //             .OnSuccessAsync(async (match) =>
+        //             {
+        //                 await _mediator.Publish(new GroupBracketChangedNotification(match.GroupId));
+        //                 return Result.Ok(match);
+        //             })
+        //             .ResolveToIResult(match =>
+        //             {
+        //                 var res = new SuccessResponse<GetMatchWithoutPlayersDto>(
+        //                     PlayersMapper.MatchToMatchDto(match),
+        //                     "match Started successfully.");
+        //                 return TypedResults.Ok(res);
+        //             }, context.TraceIdentifier);
+        //     })
+        //     .AddFluentValidationAutoValidation();
 
-        app.MapPost("/matches/{match_id}/end",
-            async Task<IResult> (int match_id, EndMatchDto dto, HttpContext context, IMediator _mediator, [FromServices] ChangeMatchStateService service) =>
-            {
-                return (await service.EndMatchAsync(match_id, dto))
-                .OnSuccessAsync(async match =>
-                {
-                    await service.UpdateGroupBracket(match.GroupId);
-                    await _mediator.Publish(new GroupBracketChangedNotification(match.GroupId));
-                    return Result.Ok(match);
-                })
-                .ResolveToIResult(match =>
-                {
-                    var res = new SuccessResponse<GetMatchWithoutPlayersDto>(
-                        PlayersMapper.MatchToMatchDto(match),
-                        "match Ended successfully.");
-                    return TypedResults.Ok(res);
-                }, context.TraceIdentifier);
-            })
-            .AddFluentValidationAutoValidation();
+        // app.MapPost("/matches/{match_id}/end",
+        //     async Task<IResult> (int match_id, EndMatchDto dto, HttpContext context, IMediator _mediator, [FromServices] ChangeMatchStateService service) =>
+        //     {
+        //         return (await service.EndMatchAsync(match_id, dto))
+        //         .OnSuccessAsync(async match =>
+        //         {
+        //             await service.UpdateGroupBracket(match.GroupId);
+        //             await _mediator.Publish(new GroupBracketChangedNotification(match.GroupId));
+        //             return Result.Ok(match);
+        //         })
+        //         .ResolveToIResult(match =>
+        //         {
+        //             var res = new SuccessResponse<GetMatchWithoutPlayersDto>(
+        //                 PlayersMapper.MatchToMatchDto(match),
+        //                 "match Ended successfully.");
+        //             return TypedResults.Ok(res);
+        //         }, context.TraceIdentifier);
+        //     })
+        //     .AddFluentValidationAutoValidation();
 
         // app.MapPut("/matches/{match_id}/reset",
         //     async Task<IResult> (int match_id, HttpContext context, [FromServices] ChangeMatchStateService service) =>

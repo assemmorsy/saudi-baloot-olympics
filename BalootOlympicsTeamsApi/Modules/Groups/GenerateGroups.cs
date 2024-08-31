@@ -75,17 +75,17 @@ public sealed class GenerateGroupsEndpoint : CarterModule
     public record GetGroupDto(int Id, string Name, DateTimeOffset CheckInAt, DateTimeOffset StartPlayAt);
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/groups/generate",
-            async Task<IResult> (GenerateGroupsRequestDto dto, HttpContext context, [FromServices] GenerateGroupsService service) =>
-            {
-                return (await service.ExecuteAsync(dto))
-                .ResolveToIResult((groups) =>
-                {
-                    var res = new SuccessResponse<List<GetGroupDto>>(groups.Select(g => PlayersMapper.GroupToGroupDto(g)).ToList(), "Groups Generated Successfully");
-                    return Results.Ok(res);
-                }, context.TraceIdentifier);
-            })
-            .AddFluentValidationAutoValidation();
+        // app.MapPost("/groups/generate",
+        //     async Task<IResult> (GenerateGroupsRequestDto dto, HttpContext context, [FromServices] GenerateGroupsService service) =>
+        //     {
+        //         return (await service.ExecuteAsync(dto))
+        //         .ResolveToIResult((groups) =>
+        //         {
+        //             var res = new SuccessResponse<List<GetGroupDto>>(groups.Select(g => PlayersMapper.GroupToGroupDto(g)).ToList(), "Groups Generated Successfully");
+        //             return Results.Ok(res);
+        //         }, context.TraceIdentifier);
+        //     })
+        //     .AddFluentValidationAutoValidation();
     }
 
 }

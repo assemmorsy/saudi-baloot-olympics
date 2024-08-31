@@ -33,36 +33,36 @@ public sealed class GetPlayerEndpoint : CarterModule
     public sealed record PlayerDto(string Id, string Name, string Phone, string Email, string State, string Comment, int? TeamId);
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        static IResult ResolveResponse(PlayerStateData data)
-        {
-            return TypedResults.Ok(new SuccessResponse(new
-            {
-                Player = PlayersMapper.PlayerToPlayerDto(data.Player),
-                Team = data.Team != null ? PlayersMapper.TeamToTeamDto(data.Team) : null,
-                data.Level,
-                data.TableNumber
-            }, "player fetched successfully."));
-        }
+        // static IResult ResolveResponse(PlayerStateData data)
+        // {
+        //     return TypedResults.Ok(new SuccessResponse(new
+        //     {
+        //         Player = PlayersMapper.PlayerToPlayerDto(data.Player),
+        //         Team = data.Team != null ? PlayersMapper.TeamToTeamDto(data.Team) : null,
+        //         data.Level,
+        //         data.TableNumber
+        //     }, "player fetched successfully."));
+        // }
 
-        app.MapGet("/players/phone/{phone}",
-                async Task<IResult> (string phone, HttpContext context, [FromServices] GetPlayerService service) =>
-                {
-                    return (await service.Get((p) => p.Phone == phone.Trim(), phone))
-                    .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
-                });
+        // app.MapGet("/players/phone/{phone}",
+        //         async Task<IResult> (string phone, HttpContext context, [FromServices] GetPlayerService service) =>
+        //         {
+        //             return (await service.Get((p) => p.Phone == phone.Trim(), phone))
+        //             .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
+        //         });
 
-        app.MapGet("/players/email/{email}",
-            async Task<IResult> (string email, HttpContext context, [FromServices] GetPlayerService service) =>
-            {
-                return (await service.Get((p) => p.Email == email.Trim(), email))
-                   .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
-            });
-        app.MapGet("/players/{id}",
-            async Task<IResult> (string id, HttpContext context, [FromServices] GetPlayerService service) =>
-            {
-                return (await service.Get((p) => p.Id == id.Trim(), id))
-                   .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
-            });
+        // app.MapGet("/players/email/{email}",
+        //     async Task<IResult> (string email, HttpContext context, [FromServices] GetPlayerService service) =>
+        //     {
+        //         return (await service.Get((p) => p.Email == email.Trim(), email))
+        //            .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
+        //     });
+        // app.MapGet("/players/{id}",
+        //     async Task<IResult> (string id, HttpContext context, [FromServices] GetPlayerService service) =>
+        //     {
+        //         return (await service.Get((p) => p.Id == id.Trim(), id))
+        //            .ResolveToIResult(ResolveResponse, context.TraceIdentifier);
+        //     });
 
     }
 

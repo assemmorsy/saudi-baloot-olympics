@@ -70,18 +70,18 @@ public sealed class SendOtpEndpoint : CarterModule
     public sealed record SendOtpDto(string FirstPlayerId, string SecondPlayerId);
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/send-team-confirmation-otp",
-            IResult (SendOtpDto request, HttpContext context, SendConfirmTeamOtpService service) =>
-            {
-                return TypedResults.BadRequest(new { message = "تم اغلاق باب التقديم " });
-            })
-            .WithOpenApi(op =>
-            {
-                op.Summary = "Send confirmation to the provided phones numbers";
-                op.Description = "this will check for this phone number existence then if these players not joined to a team it will send confirmation to the email and the whatsapp number.";
-                return op;
-            })
-            .AddFluentValidationAutoValidation();
+        // app.MapPost("/send-team-confirmation-otp",
+        //     IResult (SendOtpDto request, HttpContext context, SendConfirmTeamOtpService service) =>
+        //     {
+        //         return TypedResults.BadRequest(new { message = "تم اغلاق باب التقديم " });
+        //     })
+        //     .WithOpenApi(op =>
+        //     {
+        //         op.Summary = "Send confirmation to the provided phones numbers";
+        //         op.Description = "this will check for this phone number existence then if these players not joined to a team it will send confirmation to the email and the whatsapp number.";
+        //         return op;
+        //     })
+        //     .AddFluentValidationAutoValidation();
 
     }
 }

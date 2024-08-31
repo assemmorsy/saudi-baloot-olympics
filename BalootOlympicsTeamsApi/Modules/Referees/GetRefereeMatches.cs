@@ -36,18 +36,19 @@ public sealed class GetRefereeMatchesEndpoint : CarterModule
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("/referee/{referee_id}/matches",
-            async Task<IResult> (Guid referee_id, HttpContext context, [FromServices] GetRefereeMatchesService service) =>
+             IResult (Guid referee_id, HttpContext context, [FromServices] GetRefereeMatchesService service) =>
             {
-                return (await service.ExecuteAsync(referee_id))
-                .ResolveToIResult(matches =>
-                {
-                    var res = new SuccessResponse<List<GetMatchWithPlayersDto>>(
-                        matches.Select(m => PlayersMapper.MatchToMatchWithPlayersDto(m)).ToList(),
-                        "matches fetched successfully.");
-                    return TypedResults.Ok(res);
-                }, context.TraceIdentifier);
-            })
-            .AddFluentValidationAutoValidation();
+                return TypedResults.Ok(new { Data = new List<int>(), messages = "matches fetched successfully." });
+                //  (await service.ExecuteAsync(referee_id))
+                // .ResolveToIResult(matches =>
+                // {
+                //     var res = new SuccessResponse<List<GetMatchWithPlayersDto>>(
+                //         matches.Select(m => PlayersMapper.MatchToMatchWithPlayersDto(m)).ToList(),
+                //         "matches fetched successfully.");
+                //     return TypedResults.Ok(res);
+                // }, context.TraceIdentifier);
+            });
+        // .AddFluentValidationAutoValidation();
 
     }
 

@@ -18,30 +18,30 @@ public sealed class GetTeamsEndpoint : CarterModule
 
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/teams",
-            async Task<IResult> (HttpContext context, [FromServices] GetTeamsService service) =>
-                (await service.ExecuteAsync())
-                    .ResolveToIResult(
-                        (teams) => TypedResults.Ok(new SuccessResponse<List<GetTeamWithoutPlayersDto>>(
-                                teams.Select(t => PlayersMapper.TeamToTeamWithoutPlayersDto(t)).ToList(),
-                                "Teams fetched successfully."
-                        )),
-                        context.TraceIdentifier));
+        // app.MapGet("/teams",
+        //     async Task<IResult> (HttpContext context, [FromServices] GetTeamsService service) =>
+        //         (await service.ExecuteAsync())
+        //             .ResolveToIResult(
+        //                 (teams) => TypedResults.Ok(new SuccessResponse<List<GetTeamWithoutPlayersDto>>(
+        //                         teams.Select(t => PlayersMapper.TeamToTeamWithoutPlayersDto(t)).ToList(),
+        //                         "Teams fetched successfully."
+        //                 )),
+        //                 context.TraceIdentifier));
 
-        app.MapGet("/teams/string",
-            async Task<IResult> (HttpContext context, [FromServices] GetTeamsService service) =>
-                (await service.ExecuteAsync())
-                    .ResolveToIResult(
-                        (teams) =>
-                        {
-                            var builder = new StringBuilder();
-                            foreach (var team in teams)
-                            {
-                                builder.AppendLine(team.ToString());
-                            }
-                            return TypedResults.Text(builder.ToString());
-                        },
-                        context.TraceIdentifier));
+        // app.MapGet("/teams/string",
+        //     async Task<IResult> (HttpContext context, [FromServices] GetTeamsService service) =>
+        //         (await service.ExecuteAsync())
+        //             .ResolveToIResult(
+        //                 (teams) =>
+        //                 {
+        //                     var builder = new StringBuilder();
+        //                     foreach (var team in teams)
+        //                     {
+        //                         builder.AppendLine(team.ToString());
+        //                     }
+        //                     return TypedResults.Text(builder.ToString());
+        //                 },
+        //                 context.TraceIdentifier));
     }
 
 }

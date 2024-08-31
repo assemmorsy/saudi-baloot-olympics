@@ -38,7 +38,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 // app.UseHttpsRedirection();
-app.MapHub<BracketHub>("/bracket-hub");
+// app.MapHub<BracketHub>("/bracket-hub");
 app.UseSerilogRequestLogging();
 app.MapCarter();
 

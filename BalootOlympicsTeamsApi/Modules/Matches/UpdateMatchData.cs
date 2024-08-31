@@ -41,19 +41,19 @@ public sealed class UpdateMatchEndpoint : CarterModule
     public sealed record UpdateMatchDataDto(Guid RefereeId, DateTimeOffset StartAt);
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPut("/matches/{match_id}",
-            async Task<IResult> (int match_id, UpdateMatchDataDto dto, HttpContext context, [FromServices] UpdateMatchService service) =>
-            {
-                return (await service.ExecuteAsync(match_id, dto))
-                .ResolveToIResult(match =>
-                {
-                    var res = new SuccessResponse<GetMatchWithoutPlayersDto>(
-                        PlayersMapper.MatchToMatchDto(match),
-                        "match updated successfully.");
-                    return TypedResults.Ok(res);
-                }, context.TraceIdentifier);
-            })
-            .AddFluentValidationAutoValidation();
+        // app.MapPut("/matches/{match_id}",
+        //     async Task<IResult> (int match_id, UpdateMatchDataDto dto, HttpContext context, [FromServices] UpdateMatchService service) =>
+        //     {
+        //         return (await service.ExecuteAsync(match_id, dto))
+        //         .ResolveToIResult(match =>
+        //         {
+        //             var res = new SuccessResponse<GetMatchWithoutPlayersDto>(
+        //                 PlayersMapper.MatchToMatchDto(match),
+        //                 "match updated successfully.");
+        //             return TypedResults.Ok(res);
+        //         }, context.TraceIdentifier);
+        //     })
+        //     .AddFluentValidationAutoValidation();
 
     }
 

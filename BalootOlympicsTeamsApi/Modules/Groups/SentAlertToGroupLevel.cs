@@ -31,11 +31,11 @@ public sealed class SendAlertToGroupLevelEndpoint : CarterModule
 {
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/groups/{groupId}/send-game-alert/{level}",
-            async Task<IResult> (int groupId, int level, HttpContext context, [FromServices] SendAlertToGroupLevelService service) =>
-            {
-                return (await service.ExecuteAsync(groupId, level))
-                    .ResolveToIResult(() => Results.Ok("Done"), context.TraceIdentifier);
-            });
+        // app.MapPost("/groups/{groupId}/send-game-alert/{level}",
+        //     async Task<IResult> (int groupId, int level, HttpContext context, [FromServices] SendAlertToGroupLevelService service) =>
+        //     {
+        //         return (await service.ExecuteAsync(groupId, level))
+        //             .ResolveToIResult(() => Results.Ok("Done"), context.TraceIdentifier);
+        //     });
     }
 }
